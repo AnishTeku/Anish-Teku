@@ -382,3 +382,21 @@ skew_kurt['Skewness'] = skewness
 skew_kurt['Kurtosis'] = kurtosis
 #skew_kurt.to_csv('skewness&kurtosis_of_co2_emissions.csv')
 print(skew_kurt)
+
+
+#groupby dataframe
+#by country name, calculate the mean and mediab of each year's values
+#groupby
+
+dataframe_groupby = read_file('GDP_USD.csv')
+
+groupby_df = dataframe_groupby[['Country Name', '2000', '2005', '2010',
+                                '2015', '2019']]
+
+#by country name, calculate the mean and mediab of each year's values
+grouped_by_countries_mean = groupby_df .groupby('Country Name').mean()
+grouped_by_countries_median = groupby_df .groupby('Country Name').median()
+
+# resulting DataFrame
+print(grouped_by_countries_mean)
+print(grouped_by_countries_median)
