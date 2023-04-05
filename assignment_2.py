@@ -152,6 +152,9 @@ def correlation_heatmap(country_data, country, color):
         country_data[i] = country_data[i].astype(dtype=np.int64)
     corr = country_data.corr().to_numpy()
 
+    print('Correlation Coefficient matrix of ', country, ' is:')
+    print(corr, '\n')
+
     fig = plt.subplots(figsize=(8, 8))
     plt.imshow(corr, cmap=color, interpolation='nearest')
     plt.colorbar(orientation='vertical', fraction=0.05)
@@ -206,7 +209,7 @@ plt.show()
 years = ['2000', '2005', '2010', '2015', '2019']
 agri = agri_land.loc[countries, years]
 print('Agricultural Land data description of years of few countries:')
-print(agri.describe())
+print(agri.describe(), '\n')
 
 #Values are plotted in Millions
 for i in agri.columns:
@@ -235,24 +238,24 @@ gdp = gdp_usd.loc[countries, years]
 print('GDP data description of years of few countries:')
 print(gdp.describe(), '\n')
 
-#Since GDP value is so high, converted its value into Million Millions
+#Since GDP value is so high, converted its value into Trillions
 for i in years:
     gdp[i] = gdp[i]/1000000000000
 
 #Plotting GDP variation of my countries in given years
-bar_plot(gdp, 'GDP in MM USD $', 'GDP')
+bar_plot(gdp, 'GDP in Trillion USD $', 'GDP')
 
-#Plotting GDP history of my countries in Million Millions
+#Plotting GDP history of my countries in Trillions
 gdp = gdp_usd_tr.loc['1961':'2021', countries]
 plt.figure()
 for i in gdp.columns:
     plt.plot(gdp.index, gdp[i]/1000000000000, label=i)
 plt.legend(title='Country', bbox_to_anchor=(1, 1))
 plt.xlabel('Year')
-plt.ylabel('GDP in Million Millions USD')
+plt.ylabel('GDP in Trillion USD')
 plt.xticks(gdp.index[::10])
 plt.title('GDP GROWTH OF COUNTRIES OVER YEARS')
-plt.savefig('GDP.png', bbox_inches='tight', dpi=300)
+plt.savefig('GDP_variation.png', bbox_inches='tight', dpi=300)
 plt.show()
 
 #Reading Labour Force data and creating its transpose
@@ -287,7 +290,7 @@ bar_plot(population, 'Population in Millions', 'TOTAL POPULATION')
 
 #Creating list of indicator names and its dataframes to create country
 #specific data and do further analysis
-indicators = ['Agricultural Land', 'CO2 Emissions', 'GDP', 'Labour Force',
+indicators = ['Agricultural Land', 'CO2 Emissions', 'GDP', 'Labor Force',
               'Population Total']
 dataframes = [agri_land, co2_mt, gdp_usd, lab_force, population_total]
 dataframes_tr = [agri_land_tr, co2_mt_tr, gdp_usd_tr, lab_force_tr,
@@ -347,15 +350,34 @@ co2_e = co2_emissions_tr.loc['1990':'2019', ['World', 'Australia', 'Brazil',
 co2_pct_world = pd.DataFrame()
 for i in countries:
     co2_pct_world[i] = (co2_e[i]/co2_e['World'])*100
+    co2_pct_world[i] = co2_pct_world[i].astype(float)
+
+print('CO2 Emissions impact on world data description:')
+print(co2_pct_world.describe(), '\n')
 
 #Plotting CO2 emissions % of World
-plt.figure()
+plt.figure(figsize=(5, 4))
 for i in co2_pct_world.columns:
     plt.plot(co2_pct_world.index, co2_pct_world[i], label=i, linestyle='--')
 plt.legend(title='Country', bbox_to_anchor=(1, 1))
 plt.xlabel('Year')
-plt.ylabel('%impact to World CO2 emission')
-plt.title('%CO2 EMISSIONS OF COUNTRY TO WORLD')
+plt.ylabel('%o CO2 emission of country in the world')
+plt.title('IMPACT OF CO2 EMISSIONS OF COUNTRY IN THE WORLD')
 plt.xticks(co2_pct_world.index[::4])
 plt.savefig('%impact.png', bbox_inches='tight', dpi=400)
 plt.show()
+
+#Finding skewness and Kurtosis of the CO2 emissions impact data
+skewness = []
+for i in countries:
+    skewness.append(co2_pct_world[i].skew())
+kurtosis = []
+for i in countries:
+    kurtosis.append(co2_pct_world[i].kurtosis())
+
+skew_kurt = pd.DataFrame()
+skew_kurt.index = countries
+skew_kurt['Skewness'] = skewness
+skew_kurt['Kurtosis'] = kurtosis
+#skew_kurt.to_csv('skewness&kurtosis_of_co2_emissions.csv')
+print(skew_kurt)
