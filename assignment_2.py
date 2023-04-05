@@ -82,9 +82,10 @@ def bar_plot(my_data, ylabel, title):
     width = 0.8/len(my_data.columns)
     offset = width/2
     ax = plt.subplot()
+    colours = ['b', 'r', 'g', 'm', 'c', 'y', 'k']
     for index, year in enumerate(my_data.columns):
         ax.bar([ln+offset+width*index for ln in range(len(my_data.index))],
-               my_data[year], width=width, label=year)
+               my_data[year], width=width, label=year, color=colours[index])
     ax.set_xticks([j+0.4 for j in range(len(my_data.index))])
     ax.set_xticklabels(my_data.index, rotation=65)
 
